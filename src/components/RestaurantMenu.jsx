@@ -3,22 +3,10 @@ import { useParams } from "react-router-dom";
 import Slider from "react-slick";
 import { Shimmer } from "../utils/Shimmer";
 import useRestaurantMenu from "../utils/useRestaurantMenu";
-import PropTypes from "prop-types";
 import { CDN_URL, MENU_IMG_URL } from "../utils/constants";
 import RecommendedItem from "./RecommendedItem";
 import ResMenuHeading from "./ResMenuHeading";
-const SampleArrow = ({ className, style, onClick }) => (
-  <div
-    className={className}
-    style={{ ...style, display: "block", background: "grey" }}
-    onClick={onClick}
-  />
-);
-SampleArrow.propTypes = {
-  className: PropTypes.string,
-  style: PropTypes.object,
-  onClick: PropTypes.func,
-};
+import SampleArrow from "./SampleArrow";
 
 const RestaurantMenu = () => {
   const { resId } = useParams();
