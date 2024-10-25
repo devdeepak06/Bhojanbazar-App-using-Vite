@@ -62,30 +62,36 @@ const Home = () => {
   const info = cardsData[0]?.card?.card?.gridElements?.infoWithStyle?.info;
   const topResInfo =
     cardsData[1]?.card?.card?.gridElements?.infoWithStyle?.restaurants;
-  console.log(topResInfo);
+  const topResTitle = cardsData[2]?.card?.card?.title;
+  console.log(cardsData);
+
   return (
     <div className="w-5/6 m-auto">
-      <h3 className="text-2xl font-bold my-4">
-        {cardsData[0]?.card?.card?.header?.title}
-      </h3>
-      <Slider {...settings}>
-        {loading
-          ? // Show shimmer placeholders while loading
-            Array(10)
-              .fill("")
-              .map((_, index) => <RestaurantCardShimmer key={index} />)
-          : info?.map((restaurant) => (
-              <div className="m-auto" key={restaurant?.id}>
-                <img
-                  className="m-auto"
-                  width={180}
-                  height={180}
-                  src={`${HOME_IMG_URL}${restaurant?.imageId}`}
-                />
-              </div>
-            ))}
-      </Slider>
-      <div className="m-auto">
+      {/* What's on your mind? */}
+      <div className="m-auto border-b border-solid">
+        <h3 className="text-2xl font-bold my-4">
+          {cardsData[0]?.card?.card?.header?.title}
+        </h3>
+        <Slider {...settings}>
+          {loading
+            ? // Show shimmer placeholders while loading
+              Array(10)
+                .fill("")
+                .map((_, index) => <RestaurantCardShimmer key={index} />)
+            : info?.map((restaurant) => (
+                <div className="m-auto" key={restaurant?.id}>
+                  <img
+                    className="m-auto"
+                    width={180}
+                    height={180}
+                    src={`${HOME_IMG_URL}${restaurant?.imageId}`}
+                  />
+                </div>
+              ))}
+        </Slider>
+      </div>
+      {/* Top restaurant chains in Noida 1 */}
+      <div className="m-auto border-b border-solid">
         <h3 className="text-2xl font-bold my-4">
           {cardsData[1]?.card?.card?.header?.title}
         </h3>
@@ -128,6 +134,11 @@ const Home = () => {
                 </div>
               ))}
         </Slider>
+      </div>
+
+      {/* "popular_restaurants_title" */}
+      <div className="m-auto border-b border-solid">
+        <h3 className="text-2xl font-bold my-4">{topResTitle}</h3>
       </div>
     </div>
   );
