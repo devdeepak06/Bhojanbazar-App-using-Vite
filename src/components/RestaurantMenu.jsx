@@ -6,6 +6,7 @@ import useRestaurantMenu from "../utils/useRestaurantMenu";
 import PropTypes from "prop-types";
 import { CDN_URL, MENU_IMG_URL } from "../utils/constants";
 import RecommendedItem from "./RecommendedItem";
+import ResMenuHeading from "./ResMenuHeading";
 const SampleArrow = ({ className, style, onClick }) => (
   <div
     className={className}
@@ -22,8 +23,11 @@ SampleArrow.propTypes = {
 const RestaurantMenu = () => {
   const { resId } = useParams();
   const { resInfo, loading, error } = useRestaurantMenu(resId);
-  const [activeRecommendationIndex, setActiveRecommendationIndex] =
-    useState(null);
+  const [activeIndex, setActiveIndex] = useState(null);
+  const toggleActiveIndex = (index) => {
+    setActiveIndex((prev) => (prev === index ? null : index));
+  };
+
   if (error) return <p>{error}</p>;
 
   const settings = {
@@ -58,8 +62,7 @@ const RestaurantMenu = () => {
     cards[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards[1]?.card?.card || {};
 
   const resInCards = cards[4]?.groupedCard?.cardGroupMap?.REGULAR?.cards || [];
-  console.log(cards);
-
+  console.log(resInCards);
   const indexesToSkip = [0, 1];
 
   return (
@@ -94,7 +97,7 @@ const RestaurantMenu = () => {
                   info: { id, name, imageId, price, defaultPrice } = {},
                 } = {},
               }) => (
-                <div key={id}>
+                <div key={`top-pics-${id}`}>
                   <div className="card-container mx-4 relative">
                     <img
                       className="m-auto"
@@ -124,86 +127,129 @@ const RestaurantMenu = () => {
             )}
           </Slider>
         ) : (
-          <p>No offers found</p>
+          <p>No offers</p>
         )}
         {/* Recommended section start from here */}
         {resInCards
           .filter((_, index) => !indexesToSkip.includes(index))
-          .map(({ card: { card: { title, itemCards = [] } = {} } }, index) => {
-            // Check if title is present
-            if (!title) return null; // Skip rendering if title is not present
+          .map(
+            (
+              {
+                card: { card: { title, itemCards = [], categories = [] } = {} },
+              },
+              index
+            ) => {
+              if (!title) return null;
 
-            return (
-              <div className="border-b border-solid" id={title} key={index}>
+              return (
                 <div
-                  className="flex justify-between items-center my-3 cursor-pointer"
-                  onClick={() =>
-                    setActiveRecommendationIndex(
-                      activeRecommendationIndex === index ? null : index
-                    )
-                  }
+                  className="border-b border-solid"
+                  id={title}
+                  key={`section-${index}-${title}`}
                 >
-                  <h4 className="font-bold text-xl leading-10">
-                    {title}{" "}
-                    {itemCards.length > 0 ? `(${itemCards.length})` : " "}
-                  </h4>
                   {itemCards.length > 0 ? (
-                    <span>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="40px"
-                        viewBox="0 -960 960 960"
-                        width="40px"
-                        fill="darkgreen"
-                        className={
-                          activeRecommendationIndex === index
-                            ? "rotate-90"
-                            : "-rotate-90"
-                        }
-                      >
-                        <path d="m414.67-480.67 170 170q9.66 9.67 9.33 23.34-.33 13.66-10 23.33-9.67 9.67-23.67 9.67-14 0-23.66-9.67L343.33-457.33q-5.33-5.34-7.5-11-2.16-5.67-2.16-12.34 0-6.66 2.16-12.33 2.17-5.67 7.5-11l194-194q9.67-9.67 23.67-9.67 14 0 23.67 9.67 9.66 9.67 9.66 23.67 0 14-9.66 23.66l-170 170Z" />
-                      </svg>
-                    </span>
+                    <>
+                      <ResMenuHeading
+                        index={index}
+                        title={title}
+                        itemCardsLength={itemCards.length}
+                        isActive={activeIndex === index}
+                        setActiveIndexes={toggleActiveIndex}
+                      />
+                      {activeIndex === index &&
+                        itemCards.map(
+                          ({
+                            card: {
+                              info: {
+                                id,
+                                name,
+                                price,
+                                description,
+                                imageId,
+                                offerTags = {},
+                                ratings = {},
+                              } = {},
+                            },
+                          }) => (
+                            <RecommendedItem
+                              key={id}
+                              id={id}
+                              name={name}
+                              price={price}
+                              description={description}
+                              imageId={imageId}
+                              title={offerTags.title}
+                              subTitle={offerTags.subTitle}
+                              rating={ratings.aggregatedRating?.rating}
+                              ratingCountV2={
+                                ratings.aggregatedRating?.ratingCountV2
+                              }
+                              MENU_IMG_URL={MENU_IMG_URL}
+                            />
+                          )
+                        )}
+                    </>
                   ) : (
-                    ""
+                    <>
+                      <h4 className="font-bold text-gray-500 text-xl leading-10">
+                        {title}
+                      </h4>
+                      {categories.length > 0 &&
+                        categories.map(
+                          ({ title, itemCards = [] }, catIndex) => (
+                            <div key={catIndex}>
+                              <ResMenuHeading
+                                index={catIndex}
+                                title={title}
+                                itemCardsLength={itemCards.length}
+                                isActive={
+                                  activeIndex === `${index}-${catIndex}`
+                                }
+                                setActiveIndexes={() =>
+                                  toggleActiveIndex(`${index}-${catIndex}`)
+                                }
+                              />
+                              {activeIndex === `${index}-${catIndex}` &&
+                                itemCards.map(
+                                  ({
+                                    card: {
+                                      info: {
+                                        id,
+                                        name,
+                                        price,
+                                        description,
+                                        imageId,
+                                        offerTags = {},
+                                        ratings = {},
+                                      } = {},
+                                    },
+                                  }) => (
+                                    <RecommendedItem
+                                      key={id}
+                                      id={id}
+                                      name={name}
+                                      price={price}
+                                      description={description}
+                                      imageId={imageId}
+                                      title={offerTags.title}
+                                      subTitle={offerTags.subTitle}
+                                      rating={ratings.aggregatedRating?.rating}
+                                      ratingCountV2={
+                                        ratings.aggregatedRating?.ratingCountV2
+                                      }
+                                      MENU_IMG_URL={MENU_IMG_URL}
+                                    />
+                                  )
+                                )}
+                            </div>
+                          )
+                        )}
+                    </>
                   )}
                 </div>
-
-                {activeRecommendationIndex === index &&
-                  itemCards.map(
-                    ({
-                      card: {
-                        info: {
-                          id,
-                          name,
-                          price,
-                          description,
-                          imageId,
-                          offerTags: { title, subTitle } = {},
-                          ratings: {
-                            aggregatedRating: { rating, ratingCountV2 } = {},
-                          } = {},
-                        } = {},
-                      },
-                    }) => (
-                      <RecommendedItem
-                        key={id}
-                        id={id}
-                        name={name}
-                        price={price}
-                        description={description}
-                        imageId={imageId}
-                        title={title}
-                        subTitle={subTitle}
-                        rating={rating}
-                        ratingCountV2={ratingCountV2}
-                        MENU_IMG_URL={MENU_IMG_URL}
-                      />
-                    )
-                  )}
-              </div>
-            );
-          })}
+              );
+            }
+          )}
       </div>
     </div>
   );

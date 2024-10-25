@@ -16,7 +16,7 @@ const RecommendedItem = ({
   const [imageSrc, setImageSrc] = useState(initialSrc);
 
   const handleError = () => {
-    setImageSrc("https://picsum.photos/200/300");
+    setImageSrc(imageSrc);
   };
   return (
     <div key={id} className="recommended-item">
