@@ -20,12 +20,12 @@ const RestaurantCard = (props) => {
       id={"restaurantCard-" + id}
       style={{ backgroundColor: "#f0f0f0" }}
     >
+      <Link to={`/restaurants/${id}`}>
       <img
         className="w-full h-36"
         src={CDN_URL + cloudinaryImageId}
         alt={`Image of ${name}`}
       />
-      <Link to={`/restaurants/${id}`}>
         <h3 className="m-0">{name}</h3>
         <h4 className="m-0">{cuisines.join(", ")}</h4>
       </Link>
