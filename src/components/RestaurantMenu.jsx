@@ -11,7 +11,7 @@ import SampleArrow from "./SampleArrow";
 const RestaurantMenu = () => {
   const { resId } = useParams();
   const { resInfo, loading, error } = useRestaurantMenu(resId);
-  const [activeIndex, setActiveIndex] = useState(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const toggleActiveIndex = (index) => {
     setActiveIndex((prev) => (prev === index ? null : index));
   };
